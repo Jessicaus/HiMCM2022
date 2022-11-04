@@ -49,11 +49,13 @@ slope, intercept, r, p, std_err = stats.linregress(years, co2conc)
 def helplinear(years):
   return slope * years + intercept
 
+#returns regression model of float array
 def linear_regression():
     mymodel = list(map(helplinear, years))
     return mymodel
     
-    
+
+#returns regression model of float array
 def poly_regression():
     mymodel = np.poly1d(np.polyfit(years, co2conc, 3))
 
@@ -62,11 +64,13 @@ def poly_regression():
     model=mymodel(years)
     return model
 
+#draws plot from model in form of float array
 def drawplot(model):
     plt.scatter(years, co2conc)
     plt.plot(years, model)
     plt.show()
 
+#returns residuals from model in form of float array
 def residual(f_model):
     resid = []
     i=0
@@ -77,12 +81,12 @@ def residual(f_model):
     return resid
 
 
-polymodel = []
 polymodel=poly_regression()
 linearmodel = linear_regression()
 print(polymodel)
 # drawplot(polymodel)
 # drawplot(linearmodel)
+
 residuals=residual(linearmodel)
 print(residuals)
 plt.scatter(years, residuals)
