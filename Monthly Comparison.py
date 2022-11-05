@@ -72,16 +72,13 @@ result = np.where(years == 2004)
 print(result)
 
 
-# In[13]:
-
-
-print(years[0])
-
-
-# In[11]:
-
-
-plt.scatter(years, co2conc,s=5)
-plt.scatter(2004,co2conc[44],c='r',s=10)
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.grid()
+ax.set_xlabel("Year")
+ax.set_ylabel("Change in CO2 Concentration (PPM)")
+ax.bar(years, co2conc)
+ax.bar(2004,co2conc[result],label="Average Change annually in 2004",color="red")
+ax.title.set_text('Average Change of CO2 Concentration in 2004 compared to Other Years')
+ax.legend()
 plt.show()
 
