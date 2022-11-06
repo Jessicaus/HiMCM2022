@@ -179,7 +179,8 @@ def drawresidtest(resids):
 def t_test(data_group1, data_group2):
     a=np.array(data_group1)
     b=np.array(data_group2)
-    print(ttest_ind(data_group1, data_group2))
+    out=str(ttest_ind(data_group1, data_group2))
+    return (out.split(" ")[1])#changed
 
 def f_test(group1, group2):
     f = np.var(group1, ddof=1)/np.var(group2, ddof=1)
@@ -188,8 +189,13 @@ def f_test(group1, group2):
     nun = residualstestaa.size-1
     dun = residualstrainaa.size-1
     p_value = 1-scipy.stats.f.cdf(f, nun, dun)
-    print(str(f)+" "+str(p_value))
+    return p_value#changed
 
+def shapiro_onlyp(data):
+    new=data.split(" ")[1]
+    new1=new.split("=")[1]
+    new2=new1.split(")")[0]
+    return new2#changed
 
 # plt.scatter(years, co2conc)
 # plt.plot(years, model)
@@ -204,16 +210,31 @@ expmodel = exp_regression()
 # drawplot(linearmodel)
 # drawplot(polymodel)
 # drawplot(logmodel)
-# drawplot(expmodel)
+drawplot(expmodel)
 
-residualstrain=residualtrain(expmodel)
-residualstest=residualtest(expmodel)
-drawresidtest(residualstest)
+#########################################################
 
-t_test(residualstest,residualstrain)
-print(shapiro(residualstest))
-print(shapiro(residualstrain))
-f_test(residualstest,residualstrain)
+models=[]
+models.append(linearmodel)
+models.append(polymodel)
+models.append(logmodel)
+models.append(expmodel)
+
+outputdata=[]
+
+for model in models:
+    residualstrain=residualtrain(model)
+    residualstest=residualtest(model)
+    modeldata=[]
+    modeldata.append(t_test(residualstest,residualstrain))
+    modeldata.append(shapiro_onlyp(str((shapiro(residualstest)))))
+    modeldata.append(shapiro_onlyp(str((shapiro(residualstrain)))))
+    modeldata.append(f_test(residualstest,residualstrain))
+    outputdata.append(modeldata)
+
+print(outputdata)
+
+########################################################
 
 years=sm.add_constant(years)
 results = sm.OLS(co2conc, years).fit()
