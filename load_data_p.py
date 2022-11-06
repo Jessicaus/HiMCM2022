@@ -122,9 +122,14 @@ def poly_regression():
 
 #draws plot from model in form of float array
 def drawplot(model):
-    plt.scatter(years, co2conc)
-    plt.plot(yearspre, model)
-    plt.scatter(yearstest, co2conctest, c='r')
+    fig, ax = plt.subplots(figsize=(7, 5))
+    ax.grid()
+    ax.scatter(years, co2conc)
+    ax.plot(yearspre, model,c='k')
+    ax.scatter(yearstest, co2conctest, c='r')
+    ax.set_xlabel("t")
+    ax.set_ylabel(r'$y-\bar{y}$')
+    ax.title.set_text('Regression')
     plt.show()
 
 #returns residualtrains from model in form of float array
@@ -157,11 +162,18 @@ def residualtest(model):
     return resid
 
 def drawresid(resids):
-    plt.scatter(years, resids)
+    fig, ax = plt.subplots(figsize=(7, 5))
+    ax.grid()
+    ax.scatter(years, resids)
     plt.show()
 
 def drawresidtest(resids):
-    plt.scatter(yearstest, resids)
+    fig, ax = plt.subplots(figsize=(7, 5))
+    ax.grid()
+    ax.scatter(yearstest, resids)
+    ax.set_xlabel("t")
+    ax.set_ylabel("Deviations")
+    ax.title.set_text('Residual Plot')
     plt.show()
 
 def t_test(data_group1, data_group2):
