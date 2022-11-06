@@ -47,13 +47,13 @@ with open(filename, 'r') as csvfile:
 # In[4]:
 
 
-years = []
-co2conc = []
+years=[]
+co2conc=[]
 for item in rows:
     years.append(float(item[0]))
-years.pop(0)
 for item in rows:
     co2conc.append(float(item[1]))
+sc=years.index(2004)
 years=np.array(years)
 co2conc=np.array(co2conc)
 
@@ -61,24 +61,28 @@ co2conc=np.array(co2conc)
 # In[5]:
 
 
-co2conc=np.diff(co2conc)
-print(co2conc)
+left=[]
+right=[]
+for i in range(0,sc-10):
+    left.append(co2conc[i+9]-co2conc[i])
+for i in range(sc-10,sc+1):
+    right.append(co2conc[i+9]-co2conc[i])
+print(left)
+print(right)
 
 
 # In[10]:
 
-
-result = np.where(years == 2004)
-print(result)
-
-
+csfont = {'fontname':'Times New Roman'}
+plt.rcParams["font.family"] = "Times New Roman"
 fig, ax = plt.subplots(figsize=(7, 5))
 ax.grid()
+ax.bar(years[:len(left)],left,label='Before 2004')
+ax.bar(years[len(left):46],right,label='Including or After 2004')
+ax.grid()
 ax.set_xlabel("Year")
-ax.set_ylabel("Change in CO2 Concentration (PPM)")
-ax.bar(years, co2conc)
-ax.bar(2004,co2conc[result],label="Average Change annually in 2004",color="red")
-ax.title.set_text('Average Change of CO2 Concentration in 2004 compared to Other Years')
+ax.set_ylabel("Average Changes in CO2 Concentration over 10 years")
+ax.title.set_text('Average Changes in CO2 Concentration of 2004 compared to Others')
 ax.legend()
 plt.show()
 
