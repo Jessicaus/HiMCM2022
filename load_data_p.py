@@ -7,7 +7,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 from scipy import stats
+import scipy
+from scipy.stats import shapiro
 import statsmodels.api as sm
+from statsmodels.stats.weightstats import ttest_ind
 from scipy.optimize import curve_fit
 
 # csv file name
@@ -31,7 +34,6 @@ with open(filename, 'r') as csvfile:
  
     # get total number of rows
     line_numbers = (csvreader.line_num)
-    print(line_numbers)
 
 yearspre = []
 co2concpre = []
@@ -40,7 +42,6 @@ for item in rows:
 for item in rows:
     co2concpre.append(float(item[1]))
 bar_y=sum(co2concpre)/len(co2concpre)
-print(bar_y)
 for i in range(len(co2concpre)):
     co2concpre[i]=co2concpre[i]-bar_y
     
@@ -49,10 +50,11 @@ co2conc=[]
 yearstest=[]
 co2conctest=[]
 
+
+
 i=0
 help10 = int(len(yearspre)/10)
 while i<len(yearspre):
-    print(i)
     if i%help10==0:
         yearstest.append(yearspre[i])
         co2conctest.append(co2concpre[i])
@@ -60,10 +62,20 @@ while i<len(yearspre):
         years.append(yearspre[i])
         co2conc.append(co2concpre[i])
     i+=1
-print(years)
-print(co2conc)
 slope, intercept, r, p, std_err = stats.linregress(years, co2conc)
 
+co2concdict={}
+co2conctestdict={}
+i=0
+for year in years:
+    co2concdict[year]=co2conc[i]
+    i+=1
+i=0
+for year in yearstest:
+    co2conctestdict[year]=co2conctest[i]
+    i+=1
+print(co2concdict)
+print(co2conctestdict)
 
 def helplinear(years):
   return slope * years + intercept
@@ -76,7 +88,7 @@ def log(x,a,b,c):
 
 #returns regression model of float array
 def linear_regression():
-    mymodel = list(map(helplinear, years))
+    mymodel = list(map(helplinear, yearspre))
     return mymodel
     
 def helplog(model):
@@ -89,41 +101,83 @@ def helplog(model):
 #returns regression model of float array
 def exp_regression():
     popt, pcov = curve_fit(exp, years, co2conc,p0=(1, 1e-6, 1))
-    model= np.empty(len(years), dtype=object)
-    for i in range(len(years)):
-        model[i]=exp(years[i],*popt)
+    model= np.empty(len(yearspre), dtype=object)
+    for i in range(len(yearspre)):
+        model[i]=exp(yearspre[i],*popt)
     return model
 
 #returns regression model of float array
 def log_regression():
     popt, pcov = curve_fit(log, years, co2conc,p0=(1, 1e-6, 1))
-    model= np.empty(len(years), dtype=object)
-    for i in range(len(years)):
-        model[i]=log(years[i],*popt)
+    model= np.empty(len(yearspre), dtype=object)
+    for i in range(len(yearspre)):
+        model[i]=log(yearspre[i],*popt)
     return model
 
 #returns regression model of float array
 def poly_regression():
     mymodel = np.poly1d(np.polyfit(years, co2conc, 3))
-    model=mymodel(years)
+    model=mymodel(yearspre)
     return model
 
 #draws plot from model in form of float array
 def drawplot(model):
     plt.scatter(years, co2conc)
-    plt.plot(years, model)
+    plt.plot(yearspre, model)
     plt.scatter(yearstest, co2conctest, c='r')
     plt.show()
 
-#returns residuals from model in form of float array
-def residual(f_model):
+#returns residualtrains from model in form of float array
+def residualtrain(model):
     resid = []
     i=0
-    for point in f_model:
-        residvalue = co2conc[i]-point
+    f_model = {}
+    for year in yearspre:
+        f_model[year]=model[i]
+        i+=1
+    i=0
+    for year in years:
+        residvalue = co2concdict[year]-f_model[year]
         resid.append(residvalue)
         i+=1
     return resid
+    
+def residualtest(model):
+    resid = []
+    i=0
+    f_model = {}
+    for year in yearspre:
+        f_model[year]=model[i]
+        i+=1
+    i=0
+    for year in yearstest:
+        residvalue = co2conctestdict[year]-f_model[year]
+        resid.append(residvalue)
+        i+=1
+    return resid
+
+def drawresid(resids):
+    plt.scatter(years, resids)
+    plt.show()
+
+def drawresidtest(resids):
+    plt.scatter(yearstest, resids)
+    plt.show()
+
+def t_test(data_group1, data_group2):
+    a=np.array(data_group1)
+    b=np.array(data_group2)
+    print(ttest_ind(data_group1, data_group2))
+
+def f_test(group1, group2):
+    f = np.var(group1, ddof=1)/np.var(group2, ddof=1)
+    residualstestaa=np.array(group1)
+    residualstrainaa=np.array(group2)
+    nun = residualstestaa.size-1
+    dun = residualstrainaa.size-1
+    p_value = 1-scipy.stats.f.cdf(f, nun, dun)
+    print(str(f)+" "+str(p_value))
+
 
 # plt.scatter(years, co2conc)
 # plt.plot(years, model)
@@ -133,15 +187,21 @@ def residual(f_model):
 polymodel=poly_regression()
 linearmodel = linear_regression()
 logmodel = log_regression()
-print(polymodel)
-# drawplot(polymodel)
+expmodel = exp_regression()
+# print(polymodel)
 # drawplot(linearmodel)
-drawplot(logmodel)
+# drawplot(polymodel)
+# drawplot(logmodel)
+# drawplot(expmodel)
 
-# residuals=residual(polymodel)
-# print(residuals)
-# plt.scatter(years, residuals)
-# plt.show()
+residualstrain=residualtrain(expmodel)
+residualstest=residualtest(expmodel)
+drawresidtest(residualstest)
+
+t_test(residualstest,residualstrain)
+print(shapiro(residualstest))
+print(shapiro(residualstrain))
+f_test(residualstest,residualstrain)
 
 years=sm.add_constant(years)
 results = sm.OLS(co2conc, years).fit()
