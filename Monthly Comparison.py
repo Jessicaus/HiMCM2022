@@ -65,7 +65,7 @@ left=[]
 right=[]
 for i in range(0,sc-10):
     left.append(co2conc[i+9]-co2conc[i])
-for i in range(sc-10,sc+1):
+for i in range(sc-10,len(co2conc)-9):
     right.append(co2conc[i+9]-co2conc[i])
 print(left)
 print(right)
@@ -78,7 +78,7 @@ plt.rcParams["font.family"] = "Times New Roman"
 fig, ax = plt.subplots(figsize=(7, 5))
 ax.grid()
 ax.bar(years[:len(left)],left,label='Before 2004')
-ax.bar(years[len(left):46],right,label='Including or After 2004')
+ax.bar(years[len(left):len(left)+len(right)],right,label='Including or After 2004')
 ax.grid()
 ax.set_xlabel("Year")
 ax.set_ylabel("Average Changes in CO2 Concentration over 10 years")
