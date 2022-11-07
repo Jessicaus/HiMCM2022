@@ -15,6 +15,8 @@ from scipy.optimize import curve_fit
 import pandas as pd
 from varname import nameof
 
+csfont = {'fontname':'Times New Roman'}
+plt.rcParams["font.family"] = "Times New Roman"
 
 # csv file name
 filename = "co2.csv "
@@ -124,16 +126,29 @@ def poly_regression():
     return model
 
 #draws plot from model in form of float array
-def drawplot(model,name):
-    fig, ax = plt.subplots(figsize=(7, 5))
-    ax.grid()
-    ax.scatter(years, co2conc)
-    ax.plot(yearspre, model,c='k')
-    ax.scatter(yearstest, co2conctest, c='r')
-    ax.set_xlabel("t")
-    ax.set_ylabel(r'$y-\bar{y}$')
-    ax.title.set_text('Regression')
-    fig.savefig("11regression"+name+".png")
+#def drawplot(model,name):
+#    fig, ax = plt.subplots(figsize=(7, 5))
+#    ax.grid()
+#    ax.scatter(years, co2conc)
+#    ax.plot(yearspre, model,c='k')
+#    ax.scatter(yearstest, co2conctest, c='r')
+#    ax.set_xlabel("t")
+#    ax.set_ylabel(r'$y-\bar{y}$')
+#    ax.title.set_text('Regression')
+#    fig.savefig("11regression"+name+".png")
+#    # plt.show()
+
+def drawplot(model,x,y):
+    #fig, ax = plt.subplots(figsize=(7, 5))
+    ax[x,y].grid()
+    ax[x,y].scatter(years, co2conc)
+    ax[x,y].plot(yearspre, model,c='k')
+    ax[x,y].scatter(yearstest, co2conctest, c='r')
+    ax[x,y].set_xlabel("t")
+    ax[x,y].set_ylabel(r'$y-\bar{y}$')
+    #ax[x,y].title.set_text(""{list}"'Regression')
+    ax[x,y].title.set_text('{} Regression'.format(names[x*2+y]))
+    #fig.savefig("11regression"+name+".png")
     # plt.show()
 
 #returns residualtrains from model in form of float array
@@ -210,11 +225,20 @@ polymodel=poly_regression()
 linearmodel = linear_regression()
 logmodel = log_regression()
 expmodel = exp_regression()
+
+names=["Linear","Polynomial","Logarithmic","Exponential"]
+models=[linearmodel,polymodel,logmodel,expmodel]
+
+fig, ax = plt.subplots(2,2,figsize=(12, 7))
+for i in range(2):
+    for j in range(2):
+        drawplot(models[i*2+j],i,j)
+plt.show()
 # print(polymodel)
-drawplot(linearmodel,nameof(linearmodel))
-drawplot(polymodel,nameof(polymodel))
-drawplot(logmodel,nameof(logmodel))
-drawplot(expmodel,nameof(expmodel))
+#drawplot(linearmodel,nameof(linearmodel))
+#drawplot(polymodel,nameof(polymodel))
+#drawplot(logmodel,nameof(logmodel))
+#drawplot(expmodel,nameof(expmodel))
 
 #########################################################
 
