@@ -12,6 +12,9 @@ from scipy.stats import shapiro
 import statsmodels.api as sm
 from statsmodels.stats.weightstats import ttest_ind
 from scipy.optimize import curve_fit
+import pandas as pd
+from varname import nameof
+
 
 # csv file name
 filename = "co2.csv "
@@ -121,7 +124,7 @@ def poly_regression():
     return model
 
 #draws plot from model in form of float array
-def drawplot(model):
+def drawplot(model,name):
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.grid()
     ax.scatter(years, co2conc)
@@ -130,7 +133,8 @@ def drawplot(model):
     ax.set_xlabel("t")
     ax.set_ylabel(r'$y-\bar{y}$')
     ax.title.set_text('Regression')
-    plt.show()
+    fig.savefig("11regression"+name+".png")
+    # plt.show()
 
 #returns residualtrains from model in form of float array
 def residualtrain(model):
@@ -161,20 +165,20 @@ def residualtest(model):
         i+=1
     return resid
 
-def drawresid(resids):
+def drawresid(resids,name):
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.grid()
     ax.scatter(years, resids)
-    plt.show()
+    fig.savefig("11residualstrainingdata"+str(name)+".png")
 
-def drawresidtest(resids):
+def drawresidtest(resids,name):
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.grid()
     ax.scatter(yearstest, resids)
     ax.set_xlabel("t")
     ax.set_ylabel("Deviations")
     ax.title.set_text('Residual Plot')
-    plt.show()
+    fig.savefig("11residualstestdata"+str(name)+".png")
 
 def t_test(data_group1, data_group2):
     a=np.array(data_group1)
@@ -207,10 +211,10 @@ linearmodel = linear_regression()
 logmodel = log_regression()
 expmodel = exp_regression()
 # print(polymodel)
-# drawplot(linearmodel)
-# drawplot(polymodel)
-# drawplot(logmodel)
-drawplot(expmodel)
+drawplot(linearmodel,nameof(linearmodel))
+drawplot(polymodel,nameof(polymodel))
+drawplot(logmodel,nameof(logmodel))
+drawplot(expmodel,nameof(expmodel))
 
 #########################################################
 
@@ -220,19 +224,38 @@ models.append(polymodel)
 models.append(logmodel)
 models.append(expmodel)
 
+# for model in models:
+    
+i=0
+
 outputdata=[]
 
 for model in models:
     residualstrain=residualtrain(model)
     residualstest=residualtest(model)
+    drawresid(residualstrain,i)
+    drawresidtest(residualstest,i)
     modeldata=[]
     modeldata.append(t_test(residualstest,residualstrain))
     modeldata.append(shapiro_onlyp(str((shapiro(residualstest)))))
     modeldata.append(shapiro_onlyp(str((shapiro(residualstrain)))))
     modeldata.append(f_test(residualstest,residualstrain))
     outputdata.append(modeldata)
+    i+=1
 
 print(outputdata)
+# dataframe = pd.DataFrame(outputdata)
+# dataframe.to_csv(r"e:\HiMCM\actual\p_values.csv")
+# outputdata.tofile('p_value.csv', sep = ',')
+# npoutputdata=np.array(outputdata)
+# np.savetxt("p_value.txt", npoutputdata, delimiter = ",")
+new_array=np.array(outputdata)
+file = open("p_values.txt", "w+")
+
+# Saving the array in a text file
+content = str(new_array)
+file.write(content)
+file.close()
 
 ########################################################
 
