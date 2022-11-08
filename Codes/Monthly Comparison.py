@@ -21,7 +21,7 @@ from scipy.optimize import curve_fit
 
 
 # csv file name
-filename = "co2.csv "
+filename = "co2.csv"
  
 # initializing the titles and rows list
 fields = []
