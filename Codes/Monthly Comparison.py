@@ -86,3 +86,39 @@ ax.title.set_text('Average Changes in CO2 Concentration of 2004 compared to Othe
 ax.legend()
 plt.show()
 
+# added 2022/11/08
+p_sum=np.array([None]*(sc+2))
+p_sum[0]=0
+p_sum[1]=co2conc[0]
+for i in range(0,sc):
+    p_sum[i+2]=p_sum[i+1]+co2conc[i+1]
+print(len(co2conc))
+print(len(p_sum))
+
+sm=0
+avg=np.array([None]*(len(p_sum)-10))
+for i in range(10,len(p_sum)):
+    avg[i-10]=p_sum[i]-p_sum[i-10]
+    avg[i-10]/=10
+    sm+=avg[i-10]
+sm/=len(avg)
+print(avg)
+print(len(avg))
+print(sm)
+
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.grid()
+ax.scatter(years[6:len(avg)+6],avg)
+#ax.bar(years[:len(left)],left,label='Before 2004')
+#ax.bar(years[len(left):len(left)+len(right)],right,label='Including or After 2004')
+#ax.grid()
+ax.set_xlabel("Year")
+ax.set_ylabel("Average Changes in CO2 Concentration over 10 years")
+ax.title.set_text('Average Changes in CO2 Concentration of 2004 compared to Others')
+# specifying horizontal line type
+ax.axhline(avg[len(avg)-1], color = 'r', linestyle = '-',label='Maximum')
+ax.axhline(avg[0], color = 'g', linestyle = '-',label='Minimum')
+ax.axhline(sm, color = 'orange', linestyle='dashed',label='Mean')
+ax.plot(2004, co2conc[sc], marker="o", markersize=6, markerfacecolor="black",label="2004 Value")
+ax.legend()
+plt.show()
