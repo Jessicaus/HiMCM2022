@@ -26,6 +26,7 @@ from pmdarima import auto_arima
 # Fit a SARIMAX(0, 1, 1)x(2, 1, 1, 12) on the training set
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.arima_model import ARIMA 
+from statsmodels.tsa.seasonal import seasonal_decompose
 
 
 # In[2]:
@@ -145,6 +146,18 @@ plt.show()
 # In[11]:
 
 
+#decompose_result_mult = seasonal_decompose(temps_train, model="additive",period=20)
+
+#trend = decompose_result_mult.trend
+#seasonal = decompose_result_mult.seasonal
+#residual = decompose_result_mult.resid
+
+#decompose_result_mult.plot();
+
+
+# In[12]:
+
+
 model = pm.auto_arima(temps_train, 
                         m=12, seasonal=True,
                       start_p=0, start_q=0, max_order=4, test='adf',error_action='ignore',  
@@ -152,16 +165,49 @@ model = pm.auto_arima(temps_train,
                       stepwise=True, trace=True)
 
 
-# In[12]:
+# In[18]:
+
+
+print(model.summary())
+
+
+# In[13]:
+
+
+prediction=model.predict(len(temps_test))
+
+
+# In[21]:
 
 
 fig, ax = plt.subplots(figsize=(7, 5))
-ax.plot(years,temps,label="Original")
-ax.plot(years_test,model.predict(len(temps_test)),color='orange',label="Predicted")
+ax.scatter(years_train,temps_train,label="Training")
+ax.scatter(years_test,temps_test,label="Testing")
+ax.plot(years_test,prediction,color='black',label="Predicted")
 ax.grid()
 ax.set_xlabel("Year")
 ax.set_ylabel("Land-Ocean Temperature (Degrees Celsius)")
 ax.title.set_text('Prediction of Land-Ocean Temperature Using ARIMA Model')
 ax.legend()
 plt.show()
+print(type(model.predict(len(temps_test))))
+
+
+# In[15]:
+
+
+def residualtest(model):
+    resid = []; residsum=0
+    for i in range(len(years_test)):
+        r=abs(temps_test[i]-model[i])
+        resid.append(r)
+        residsum+=r*r
+    return resid, residsum
+
+
+# In[16]:
+
+
+resid,residsum=residualtest(prediction)
+print(residsum)
 
