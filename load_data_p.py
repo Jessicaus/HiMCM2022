@@ -296,7 +296,7 @@ models=[linearmodel,polymodel,logmodel,expmodel]
 fig, ax = plt.subplots(2,2,figsize=(12, 7))
 for i in range(2):
     for j in range(2):
-        drawplot(models[i*2+j],i,j)
+        drawplotgrid(models[i*2+j],i,j)
 plt.show()
 
 for i in range(2):
