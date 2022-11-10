@@ -153,20 +153,50 @@ def poly_regression():
     # fig.savefig("11regression"+name+".png")
     # plt.show()
     
+#def drawplot(model,x,y):
+    # fig, ax = plt.subplots(figsize=(7, 5))
+    #ax[x,y].grid()
+    #ax[x,y].scatter(years, co2conc, label='Training Data')
+    #ax[x,y].plot(yearspre, model,c='k')
+    #ax[x,y].scatter(yearslast, co2conclast, c='r',label='Testing Data')
+    #ax[x,y].set_xlabel("t")
+    #ax[x,y].set_ylabel(r'$y-\bar{y}$')
+    #ax[x,y].title.set_text(""{list}"'Regression')
+    #if ppp==0:
+    #    fig.legend()
+    #ax[x,y].title.set_text('{} Regression'.format(names[x*2+y]))
+    #fig.savefig("11regression"+name+".png")
+   
 def drawplot(model,x,y):
+    fig, ax = plt.subplots(figsize=(7, 5))
+    ax.grid()
+    ax.scatter(years, co2conc, label='Training Data')
+    ax.plot(yearspre, model,c='k')
+    ax.scatter(yearslast, co2conclast, c='r',label='Testing Data')
+    ax.set_xlabel("t")
+    ax.set_ylabel(r'$c-\bar{c}$')
+    #ax[x,y].title.set_text(""{list}"'Regression')
+    ax.legend()
+    #if ppp==0:
+     #   fig.legend()
+    ax.title.set_text('{} Regression'.format(names[x*2+y]))
+    #fig.savefig("11regression"+name+".png")
+
+def drawplotgrid(model,x,y):
     # fig, ax = plt.subplots(figsize=(7, 5))
     ax[x,y].grid()
     ax[x,y].scatter(years, co2conc, label='Training Data')
     ax[x,y].plot(yearspre, model,c='k')
     ax[x,y].scatter(yearslast, co2conclast, c='r',label='Testing Data')
     ax[x,y].set_xlabel("t")
-    ax[x,y].set_ylabel(r'$y-\bar{y}$')
+    ax[x,y].set_ylabel(r'$c-\bar{c}$')
     #ax[x,y].title.set_text(""{list}"'Regression')
-    if ppp==0:
-        fig.legend()
+    ax[x,y].legend()
+    #if ppp==0:
+     #   fig.legend()
     ax[x,y].title.set_text('{} Regression'.format(names[x*2+y]))
     #fig.savefig("11regression"+name+".png")
-
+ 
 def residualassess(model):
     resid=0
     i=0
@@ -263,14 +293,15 @@ print(polymodel)
 names=["Linear","Polynomial","Logarithmic","Exponential"]
 models=[linearmodel,polymodel,logmodel,expmodel]
 
-ppp=0
-
 fig, ax = plt.subplots(2,2,figsize=(12, 7))
 for i in range(2):
     for j in range(2):
         drawplot(models[i*2+j],i,j)
-    ppp+=1
 plt.show()
+
+for i in range(2):
+    for j in range(2):
+        drawplot(models[i*2+j],i,j)
 #########################################################
 
 # models=[]
