@@ -353,6 +353,7 @@ co2concori=co2concori[0:46]
 years1=sm.add_constant(years)
 results = sm.OLS(co2conc, years1).fit()
 print(results.summary())
+print(results.pvalues)
 
 yearss=np.square(years)
 yearsc=np.power(years,3)
@@ -365,12 +366,15 @@ print(type(dfy))
 dfy1=sm.add_constant(dfy)
 results=sm.OLS(co2conc,dfy1).fit()
 print(results.summary())
+print(results.pvalues)
 
 years2=sm.add_constant(yearsori)
 results = sm.OLS(np.log(co2concori), years2).fit()
 print(results.summary())
+print(results.pvalues)
 
 years3=np.log(yearsori)
 years3=sm.add_constant(years3)
 results = sm.OLS(co2concori, years3).fit()
 print(results.summary())
+print(results.pvalues)
