@@ -95,7 +95,7 @@ def exp(x,a,b,c):
     return a * np.exp(-b * x) + c
 def log(x,a,b,c):
     # print("abcabcbcabcabcabca33333333333333mmmmmmm"+str(a)+" "+str(b)+" "+str(c))
-    return a+b*np.log(x) + c
+    return a-b*np.log(x) + c
 #returns regression model of float array
 def linear_regression():
     mymodel = list(map(helplinear, yearspre))
@@ -111,14 +111,14 @@ def exp_regression():
     print(str(years)+"  "+str(co2conc))
     plt.scatter(years,co2conc)
     plt.show()
-    popt, pcov = curve_fit(exp, years, co2conc,p0=(1, 1e-6, 1))
+    popt, pcov = curve_fit(exp, years, co2conc,p0=(20, 1e-6, -41))
     model= np.empty(len(yearspre), dtype=object)
     for i in range(len(yearspre)):
         model[i]=exp(yearspre[i],*popt)
     return model
 #returns regression model of float array
 def log_regression():
-    popt, pcov = curve_fit(log, years, co2conc,p0=(1, 1e-6, 1))
+    popt, pcov = curve_fit(log, years[1:], co2conc[1:],p0=(20, 1e-6, -41), maxfev=2500)
     model= np.empty(len(yearspre), dtype=object)
     for i in range(len(yearspre)):
         model[i]=log(yearspre[i],*popt)
@@ -279,16 +279,6 @@ for i in range(2):
 plt.show()
 
 for i in range(2):
-
-    
-          
-            
-    
-
-          
-    
-    
-  
     for j in range(2):
         drawplot(models[i*2+j],i,j)
 #########################################################
@@ -325,9 +315,9 @@ for i in range(2):
 # file.write(content)
 # file.close()
 ########################################################
-years=sm.add_constant(years)
-results = sm.OLS(co2conc, years).fit()
-print(results.summary())
+#years=sm.add_constant(years)
+#results = sm.OLS(co2conc, years).fit()
+#print(results.summary())
 # stepwise_fit = auto_arima(co2concpre, start_p = 1, start_q = 1,
                           # max_p = 3, max_q = 3, m = 12,
                           # start_P = 0, seasonal = True,
@@ -349,7 +339,15 @@ print(results.summary())
 # test['# Passengers'].plot(legend = True)
 for model in models:
     print(residualassess(model))
-
+                           
+yearsori = []
+co2concori = []
+for item in rows:
+    yearsori.append(float(item[0]))
+for item in rows:
+    co2concori.append(float(item[1]))
+yearsori=yearsori[0:46]
+co2concori=co2concori[0:46]
 
 #p-value evaluation  
 years1=sm.add_constant(years)
@@ -368,10 +366,11 @@ dfy1=sm.add_constant(dfy)
 results=sm.OLS(co2conc,dfy1).fit()
 print(results.summary())
 
-results = sm.OLS(np.log(co2conc), years2).fit()
+years2=sm.add_constant(yearsori)
+results = sm.OLS(np.log(co2concori), years2).fit()
 print(results.summary())
 
-years3=np.log(years)
+years3=np.log(yearsori)
 years3=sm.add_constant(years3)
-results = sm.OLS(co2conc, years3).fit()
+results = sm.OLS(co2concori, years3).fit()
 print(results.summary())
