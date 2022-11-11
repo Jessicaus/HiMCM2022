@@ -378,11 +378,6 @@ for i in range(2):
 
 ########################################################
 
-years=sm.add_constant(years)
-results = sm.OLS(co2conc, years).fit()
-print(results.summary())
-
-
 # stepwise_fit = auto_arima(co2concpre, start_p = 1, start_q = 1,
                           # max_p = 3, max_q = 3, m = 12,
                           # start_P = 0, seasonal = True,
@@ -406,3 +401,29 @@ print(results.summary())
 
 for model in models:
     print(residualassess(model))
+ 
+
+#p-value evaluation  
+years1=sm.add_constant(years)
+results = sm.OLS(co2conc, years1).fit()
+print(results.summary())
+
+yearss=np.square(years)
+yearsc=np.power(years,3)
+dfy=[]
+for i in range(len(years)):
+    dfy.append([years[i],yearss[i],yearsc[i]])
+dfy=np.array(dfy)
+print(len(dfy))
+print(type(dfy))
+dfy1=sm.add_constant(dfy)
+results=sm.OLS(co2conc,dfy1).fit()
+print(results.summary())
+
+results = sm.OLS(np.log(co2conc), years2).fit()
+print(results.summary())
+
+years3=np.log(years)
+years3=sm.add_constant(years3)
+results = sm.OLS(co2conc, years3).fit()
+print(results.summary())
