@@ -26,11 +26,12 @@ plt.rcParams["font.family"] = "Times New Roman"
 
 # csv file name
 filename = "co2.csv "
- 
+filename1= "temp.csv"
 # initializing the titles and rows list
 fields = []
 rows = []
- 
+fields1 = []
+rows1 = []
 # reading csv file
 with open(filename, 'r') as csvfile:
     # creating a csv reader object
@@ -46,17 +47,40 @@ with open(filename, 'r') as csvfile:
     # get total number of rows
     line_numbers = (csvreader.line_num)
 
+with open(filename1, 'r') as csvfile:
+    # creating a csv reader object
+    csvreader = csv.reader(csvfile)
+     
+    # extracting field names through first row
+    fields1 = next(csvreader)
+ 
+    # extracting each data row one by one
+    for row in csvreader:
+        rows1.append(row)
+ 
+    # get total number of rows
+    line_numbers = (csvreader.line_num)
+print(rows1)
 yearspre = []
 co2concpre = []
-for item in rows:
-    yearspre.append(float(item[0])-1959)
+
+for item in rows1:
+    # yearspre.append(float(item[0])-1959)
+    yearspre.append(float(item[1]))
 for item in rows:
     co2concpre.append(float(item[1]))
 bar_y=sum(co2concpre)/len(co2concpre)
 print(bar_y)
 for i in range(len(co2concpre)):
     co2concpre[i]=co2concpre[i]-bar_y
-    
+for i in range(len(yearspre)):
+    yearspre[i]=yearspre[i]*100
+yearspre=yearspre[1:]
+mmin=yearspre[0]
+mmax=yearspre[len(yearspre)-1]
+yearsall=[]
+for i in range(-100,200):
+    yearsall.append(i)
 years=[]
 co2conc=[]
 yearstest=[]
@@ -94,20 +118,22 @@ for year in yearspre:
     i+=1
     
 def helplinear(years):
-    # print("abcabcbcabcabcabca111111111111mmmmmmmmmm"+str(slope)+" "+str(years)+" "+str(intercept))
+    print("abcabcbcabcabcabca111111111111mmmmmmmmmm"+str(slope)+" "+str(years)+" "+str(intercept))
     return slope * years + intercept
   
 def exp(x,a,b,c):
-    # print("abcabcbcabcabcabca444444444mmmmmm"+str(a)+" "+str(b)+" "+str(c))
+    print("abcabcbcabcabcabca444444444mmmmmm"+str(a)+" "+str(b)+" "+str(c))
     return a * np.exp(-b * x) + c
 
-def log(x,a,b,c):
+# def log(x,a,b,c):
     # print("abcabcbcabcabcabca33333333333333mmmmmmm"+str(a)+" "+str(b)+" "+str(c))
     return a+b*np.log(x) + c
-
+def log(x, a, b, c, d):
+    print("abcabcbcabcabcabca33333333333333mmmmmmm"+str(a)+" "+str(b)+" "+str(c)+""+str(d))
+    return a * np.exp(-b * (x - c)) + d
 #returns regression model of float array
 def linear_regression():
-    mymodel = list(map(helplinear, yearspre))
+    mymodel = list(map(helplinear, yearsall))
     return mymodel
     
 def helplog(model):
@@ -119,25 +145,27 @@ def helplog(model):
 
 #returns regression model of float array
 def exp_regression():
-    popt, pcov = curve_fit(exp, years, co2conc,p0=(1, 1e-6, 1))
-    model= np.empty(len(yearspre), dtype=object)
-    for i in range(len(yearspre)):
-        model[i]=exp(yearspre[i],*popt)
+    # popt, pcov = curve_fit(exp, years, co2conc)
+    popt, pcov = curve_fit(exp, years, co2conc,p0=(1, 0.01, 1))
+
+    model= np.empty(len(yearsall), dtype=object)
+    for i in range(len(yearsall)):
+        model[i]=exp(yearsall[i],*popt)
     return model
 
 #returns regression model of float array
 def log_regression():
-    popt, pcov = curve_fit(log, years, co2conc,p0=(1, 1e-6, 1))
-    model= np.empty(len(yearspre), dtype=object)
-    for i in range(len(yearspre)):
-        model[i]=log(yearspre[i],*popt)
+    popt, pcov = curve_fit(log, years, co2conc,p0=(50, 0, 90, 60), bounds=([0, 0, 90, 0], [1000, 0.1, 200, 200]))
+    model= np.empty(len(yearsall), dtype=object)
+    for i in range(len(yearsall)):
+        model[i]=log(yearsall[i],*popt)
     return model
 
 #returns regression model of float array
 def poly_regression():
     mymodel = np.poly1d(np.polyfit(years, co2conc, 3))
-    # print((mymodel))
-    model=mymodel(yearspre)
+    print((mymodel))
+    model=mymodel(yearsall)
     return model
 
 #draws plot from model in form of float array
@@ -186,7 +214,11 @@ def drawplotgrid(model,x,y):
     # fig, ax = plt.subplots(figsize=(7, 5))
     ax[x,y].grid()
     ax[x,y].scatter(years, co2conc, label='Training Data')
-    ax[x,y].plot(yearspre, model,c='k')
+    print(len(yearsall))
+    print(len(model))
+    ax[x,y].plot(yearsall, model,c='k')
+    print(len(yearslast))
+    print(len(co2conclast))
     ax[x,y].scatter(yearslast, co2conclast, c='r',label='Testing Data')
     ax[x,y].set_xlabel("t")
     ax[x,y].set_ylabel(r'$c-\bar{c}$')
@@ -196,7 +228,8 @@ def drawplotgrid(model,x,y):
      #   fig.legend()
     ax[x,y].title.set_text('{} Regression'.format(names[x*2+y]))
     #fig.savefig("11regression"+name+".png")
- 
+plt.scatter(yearspre,co2concpre)
+plt.show()
 def residualassess(model):
     resid=0
     i=0
@@ -285,12 +318,13 @@ polymodel=poly_regression()
 linearmodel = linear_regression()
 logmodel = log_regression()
 expmodel = exp_regression()
-print(polymodel)
+# print(polymodel)
 # drawplot(linearmodel,nameof(linearmodel))
 # drawplot(polymodel,nameof(polymodel))
 # drawplot(logmodel,nameof(logmodel))
 # drawplot(expmodel,nameof(expmodel))
 names=["Linear","Polynomial","Logarithmic","Exponential"]
+# models=[linearmodel,polymodel,logmodel]
 models=[linearmodel,polymodel,logmodel,expmodel]
 
 fig, ax = plt.subplots(2,2,figsize=(12, 7))
