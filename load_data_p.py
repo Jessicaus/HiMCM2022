@@ -61,17 +61,17 @@ with open(filename1, 'r') as csvfile:
     # get total number of rows
     line_numbers = (csvreader.line_num)
 yearspre = []
-co2concpre = []
+temperaturepre = []
 
 for item in rows1:
     # yearspre.append(float(item[0])-1959)
     yearspre.append(float(item[1]))
 for item in rows:
-    co2concpre.append(float(item[1]))
-bar_y=sum(co2concpre)/len(co2concpre)
+    temperaturepre.append(float(item[1]))
+bar_y=sum(temperaturepre)/len(temperaturepre)
 print(bar_y)
-for i in range(len(co2concpre)):
-    co2concpre[i]=co2concpre[i]-bar_y
+for i in range(len(temperaturepre)):
+    temperaturepre[i]=temperaturepre[i]-bar_y
 for i in range(len(yearspre)):
     yearspre[i]=yearspre[i]*100
 yearspre=yearspre[1:]
@@ -85,21 +85,21 @@ i=0
 help10 = int(len(yearspre)/10)
 
 years=[]
-co2conc=[]
+temperature=[]
 yearstest=[]
-co2conctest=[]
+temperaturetest=[]
 yearslast=yearspre[46:]
-co2conclast=co2concpre[46:]
+temperaturelast=temperaturepre[46:]
 years=yearspre[0:46]
-co2conc=co2concpre[0:46]
+temperature=temperaturepre[0:46]
 i=0
-slope, intercept, r, p, std_err = stats.linregress(years, co2conc)
+slope, intercept, r, p, std_err = stats.linregress(years, temperature)
 
-co2concalldict={}
+temperaturealldict={}
 
 i=0
 for year in yearspre:
-    co2concalldict[year]=co2concpre[i]
+    temperaturealldict[year]=temperaturepre[i]
     i+=1
     
 def helplinear(years):
@@ -123,8 +123,8 @@ def linear_regression():
 
 #returns regression model of float array
 def exp_regression():
-    # popt, pcov = curve_fit(exp, years, co2conc)
-    popt, pcov = curve_fit(exp, years, co2conc,p0=(1, 0.01, 1))
+    # popt, pcov = curve_fit(exp, years, temperature)
+    popt, pcov = curve_fit(exp, years, temperature,p0=(1, 0.01, 1))
 
     model= np.empty(len(yearsall), dtype=object)
     for i in range(len(yearsall)):
@@ -133,7 +133,7 @@ def exp_regression():
 
 #returns regression model of float array
 def log_regression():
-    popt, pcov = curve_fit(log, years, co2conc,p0=(50, 0, 90, 60), bounds=([0, 0, 90, 0], [1000, 0.1, 200, 200]))
+    popt, pcov = curve_fit(log, years, temperature,p0=(50, 0, 90, 60), bounds=([0, 0, 90, 0], [1000, 0.1, 200, 200]))
     model= np.empty(len(yearsall), dtype=object)
     for i in range(len(yearsall)):
         model[i]=log(yearsall[i],*popt)
@@ -141,7 +141,7 @@ def log_regression():
 
 #returns regression model of float array
 def poly_regression():
-    mymodel = np.poly1d(np.polyfit(years, co2conc, 3))
+    mymodel = np.poly1d(np.polyfit(years, temperature, 3))
     print((mymodel))
     model=mymodel(yearsall)
     return model
@@ -149,9 +149,9 @@ def poly_regression():
 def drawplot(model,x,y):
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.grid()
-    ax.scatter(years, co2conc, label='Training Data')
+    ax.scatter(years, temperature, label='Training Data')
     ax.plot(yearspre, model,c='k')
-    ax.scatter(yearslast, co2conclast, c='r',label='Testing Data')
+    ax.scatter(yearslast, temperaturelast, c='r',label='Testing Data')
     ax.set_xlabel("t")
     ax.set_ylabel(r'$c-\bar{c}$')
     ax.legend()
@@ -159,18 +159,18 @@ def drawplot(model,x,y):
 
 def drawplotgrid(model,x,y):
     ax[x,y].grid()
-    ax[x,y].scatter(years, co2conc, label='Training Data')
+    ax[x,y].scatter(years, temperature, label='Training Data')
     print(len(yearsall))
     print(len(model))
     ax[x,y].plot(yearsall, model,c='k')
     print(len(yearslast))
-    print(len(co2conclast))
-    ax[x,y].scatter(yearslast, co2conclast, c='r',label='Testing Data')
+    print(len(temperaturelast))
+    ax[x,y].scatter(yearslast, temperaturelast, c='r',label='Testing Data')
     ax[x,y].set_xlabel("t")
     ax[x,y].set_ylabel(r'$c-\bar{c}$')
     ax[x,y].legend()
     ax[x,y].title.set_text('{} Regression'.format(names[x*2+y]))
-plt.scatter(yearspre,co2concpre)
+plt.scatter(yearspre,temperaturepre)
 plt.show()
 def residualassess(model):
     resid=0
@@ -181,7 +181,7 @@ def residualassess(model):
         i+=1
     i=0
     for year in yearslast:
-        residvalue = pow(co2concalldict[year]-f_model[year],2)
+        residvalue = pow(temperaturealldict[year]-f_model[year],2)
         resid=resid+residvalue
         i+=1
     return resid
@@ -196,7 +196,7 @@ def residualtrain(model):
         i+=1
     i=0
     for year in years:
-        residvalue = co2concdict[year]-f_model[year]
+        residvalue = temperaturedict[year]-f_model[year]
         resid.append(residvalue)
         i+=1
     return resid
@@ -210,7 +210,7 @@ def residualtest(model):
         i+=1
     i=0
     for year in yearslast:
-        residvalue = co2concdict[year]-f_model[year]
+        residvalue = temperaturedict[year]-f_model[year]
         resid.append(residvalue)
         i+=1
     return resid
@@ -303,11 +303,11 @@ file.close()
 ########################################################
 
 years=sm.add_constant(years)
-results = sm.OLS(co2conc, years).fit()
+results = sm.OLS(temperature, years).fit()
 print(results.summary())
 
 
-# stepwise_fit = auto_arima(co2concpre, start_p = 1, start_q = 1,
+# stepwise_fit = auto_arima(temperaturepre, start_p = 1, start_q = 1,
                           # max_p = 3, max_q = 3, m = 12,
                           # start_P = 0, seasonal = True,
                           # d = None, D = 1, trace = True,
@@ -315,7 +315,7 @@ print(results.summary())
                           # suppress_warnings = True,  # we don't want convergence warnings
                           # stepwise = True) 
 # stepwise_fit.summary()
-# model = SARIMAX(co2conc, 
+# model = SARIMAX(temperature, 
                 # order = (1, 1, 0), 
                 # seasonal_order =(0, 1, 1, 12))
 # result = model.fit()
