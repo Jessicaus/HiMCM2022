@@ -60,7 +60,6 @@ with open(filename1, 'r') as csvfile:
  
     # get total number of rows
     line_numbers = (csvreader.line_num)
-print(rows1)
 yearspre = []
 co2concpre = []
 
@@ -76,42 +75,28 @@ for i in range(len(co2concpre)):
 for i in range(len(yearspre)):
     yearspre[i]=yearspre[i]*100
 yearspre=yearspre[1:]
-mmin=yearspre[0]
-mmax=yearspre[len(yearspre)-1]
+
+
 yearsall=[]
 for i in range(-100,200):
     yearsall.append(i)
+
+i=0
+help10 = int(len(yearspre)/10)
+
 years=[]
 co2conc=[]
 yearstest=[]
 co2conctest=[]
-
 yearslast=yearspre[46:]
 co2conclast=co2concpre[46:]
-
+years=yearspre[0:46]
+co2conc=co2concpre[0:46]
 i=0
-help10 = int(len(yearspre)/10)
-while i<len(yearspre):
-    if i%help10==0:
-        yearstest.append(yearspre[i])
-        co2conctest.append(co2concpre[i])
-    else:
-        years.append(yearspre[i])
-        co2conc.append(co2concpre[i])
-    i+=1
 slope, intercept, r, p, std_err = stats.linregress(years, co2conc)
 
-co2concdict={}
-co2conctestdict={}
 co2concalldict={}
-i=0
-for year in years:
-    co2concdict[year]=co2conc[i]
-    i+=1
-i=0
-for year in yearstest:
-    co2conctestdict[year]=co2conctest[i]
-    i+=1
+
 i=0
 for year in yearspre:
     co2concalldict[year]=co2concpre[i]
@@ -135,13 +120,6 @@ def log(x, a, b, c, d):
 def linear_regression():
     mymodel = list(map(helplinear, yearsall))
     return mymodel
-    
-def helplog(model):
-    out=[]
-    for year in years:
-        out.append(model[1]-model[0]*np.log(year))
-    return out
-
 
 #returns regression model of float array
 def exp_regression():
@@ -167,33 +145,6 @@ def poly_regression():
     print((mymodel))
     model=mymodel(yearsall)
     return model
-
-#draws plot from model in form of float array
-# def drawplot(model,name):
-    # fig, ax = plt.subplots(figsize=(7, 5))
-    # ax.grid()
-    # ax.scatter(years, co2conc)
-    # ax.plot(yearspre, model,c='k')
-    # ax.scatter(yearstest, co2conctest, c='r')
-    # ax.set_xlabel("t")
-    # ax.set_ylabel(r'$y-\bar{y}$')
-    # ax.title.set_text('Regression')
-    # fig.savefig("11regression"+name+".png")
-    # plt.show()
-    
-#def drawplot(model,x,y):
-    # fig, ax = plt.subplots(figsize=(7, 5))
-    #ax[x,y].grid()
-    #ax[x,y].scatter(years, co2conc, label='Training Data')
-    #ax[x,y].plot(yearspre, model,c='k')
-    #ax[x,y].scatter(yearslast, co2conclast, c='r',label='Testing Data')
-    #ax[x,y].set_xlabel("t")
-    #ax[x,y].set_ylabel(r'$y-\bar{y}$')
-    #ax[x,y].title.set_text(""{list}"'Regression')
-    #if ppp==0:
-    #    fig.legend()
-    #ax[x,y].title.set_text('{} Regression'.format(names[x*2+y]))
-    #fig.savefig("11regression"+name+".png")
    
 def drawplot(model,x,y):
     fig, ax = plt.subplots(figsize=(7, 5))
@@ -203,15 +154,10 @@ def drawplot(model,x,y):
     ax.scatter(yearslast, co2conclast, c='r',label='Testing Data')
     ax.set_xlabel("t")
     ax.set_ylabel(r'$c-\bar{c}$')
-    #ax[x,y].title.set_text(""{list}"'Regression')
     ax.legend()
-    #if ppp==0:
-     #   fig.legend()
     ax.title.set_text('{} Regression'.format(names[x*2+y]))
-    #fig.savefig("11regression"+name+".png")
 
 def drawplotgrid(model,x,y):
-    # fig, ax = plt.subplots(figsize=(7, 5))
     ax[x,y].grid()
     ax[x,y].scatter(years, co2conc, label='Training Data')
     print(len(yearsall))
@@ -222,12 +168,8 @@ def drawplotgrid(model,x,y):
     ax[x,y].scatter(yearslast, co2conclast, c='r',label='Testing Data')
     ax[x,y].set_xlabel("t")
     ax[x,y].set_ylabel(r'$c-\bar{c}$')
-    #ax[x,y].title.set_text(""{list}"'Regression')
     ax[x,y].legend()
-    #if ppp==0:
-     #   fig.legend()
     ax[x,y].title.set_text('{} Regression'.format(names[x*2+y]))
-    #fig.savefig("11regression"+name+".png")
 plt.scatter(yearspre,co2concpre)
 plt.show()
 def residualassess(model):
@@ -282,7 +224,7 @@ def drawresid(resids,name):
 def drawresidtest(resids,name):
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.grid()
-    ax.scatter(yearstest, resids)
+    ax.scatter(yearslast, resids)
     ax.set_xlabel("t")
     ax.set_ylabel("Deviations")
     ax.title.set_text('Residual Plot')
@@ -309,22 +251,11 @@ def shapiro_onlyp(data):
     new2=new1.split(")")[0]
     return new2#changed
 
-# plt.scatter(years, co2conc)
-# plt.plot(years, model)
-# plt.scatter(yearstest, co2conctest, c='r')
-# plt.show()
-
 polymodel=poly_regression()
 linearmodel = linear_regression()
 logmodel = log_regression()
 expmodel = exp_regression()
-# print(polymodel)
-# drawplot(linearmodel,nameof(linearmodel))
-# drawplot(polymodel,nameof(polymodel))
-# drawplot(logmodel,nameof(logmodel))
-# drawplot(expmodel,nameof(expmodel))
 names=["Linear","Polynomial","Logarithmic","Exponential"]
-# models=[linearmodel,polymodel,logmodel]
 models=[linearmodel,polymodel,logmodel,expmodel]
 
 fig, ax = plt.subplots(2,2,figsize=(12, 7))
@@ -338,43 +269,36 @@ for i in range(2):
         drawplot(models[i*2+j],i,j)
 #########################################################
 
-# models=[]
-# models.append(linearmodel)
-# models.append(polymodel)
-# models.append(logmodel)
-# models.append(expmodel)
-
-# for model in models:
+models=[]
+models.append(linearmodel)
+models.append(polymodel)
+models.append(logmodel)
+models.append(expmodel)
     
-# i=0
+i=0
 
-# outputdata=[]
+outputdata=[]
 
-# for model in models:
-    # residualstrain=residualtrain(model)
-    # residualstest=residualtest(model)
-    # drawresid(residualstrain,i)
-    # drawresidtest(residualstest,i)
-    # modeldata=[]
-    # modeldata.append(t_test(residualstest,residualstrain))
-    # modeldata.append(shapiro_onlyp(str((shapiro(residualstest)))))
-    # modeldata.append(shapiro_onlyp(str((shapiro(residualstrain)))))
-    # modeldata.append(f_test(residualstest,residualstrain))
-    # outputdata.append(modeldata)
-    # i+=1
+for model in models:
+    residualstrain=residualtrain(model)
+    residualstest=residualtest(model)
+    modeldata=[]
+    modeldata.append(residualassess(model))
+    modeldata.append(t_test(residualstest,residualstrain))
+    modeldata.append(shapiro_onlyp(str((shapiro(residualstest)))))
+    modeldata.append(shapiro_onlyp(str((shapiro(residualstrain)))))
+    modeldata.append(f_test(residualstest,residualstrain))
+    outputdata.append(modeldata)
+    i+=1
 
-# dataframe = pd.DataFrame(outputdata)
-# dataframe.to_csv(r"e:\HiMCM\actual\p_values.csv")
-# outputdata.tofile('p_value.csv', sep = ',')
-# npoutputdata=np.array(outputdata)
-# np.savetxt("p_value.txt", npoutputdata, delimiter = ",")
-# new_array=np.array(outputdata)
-# file = open("p_values.txt", "w+")
 
-# Saving the array in a text file
-# content = str(new_array)
-# file.write(content)
-# file.close()
+
+new_array=np.array(outputdata)
+file = open("p_values.txt", "w+")
+Saving the array in a text file
+content = str(new_array)
+file.write(content)
+file.close()
 
 ########################################################
 
