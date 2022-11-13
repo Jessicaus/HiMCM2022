@@ -374,16 +374,17 @@ regressor = SVR(kernel="poly")
 yearsy=[]
 for i in range(len(years)):
     yearsy.append([years[i]])
-regressor.fit(yearsy,temperature)
-prediction=regressor.predict(yearsy)
+prediction=regressor.fit(yearsy,temperature).predict(yearsy)
 
+dct=dict(zip(years,prediction))
+dct=OrderedDict(sorted(dct.items()))
 
 # In[77]:
 
 
 fig, ax = plt.subplots(figsize=(7, 5))
 ax.scatter(years,temperature)
-ax.plot(years,prediction,color="green")
+ax.plot(dct.keys(),dct.values(),color="green")
 #ax.scatter(years_test,temps_test,label="Testing")
 #ax.plot(years_test,prediction,color='black',label="Predicted")
 ax.grid()
@@ -398,9 +399,11 @@ plt.show()
 # In[84]:
 
 
-regressor2 = SVR(kernel="rbf")
-regressor2.fit(yearsy,temperature)
-prediction2=regressor2.predict(yearsy)
+regressor2 =SVR(kernel="rbf")
+prediction2=regressor2.fit(yearsy,temperature).predict(yearsy)
+
+dct2=dict(zip(years,prediction2))
+dct2=OrderedDict(sorted(dct2.items()))
 
 
 # In[85]:
@@ -408,7 +411,7 @@ prediction2=regressor2.predict(yearsy)
 
 fig, ax = plt.subplots(figsize=(7, 5))
 ax.scatter(years,temperature)
-ax.plot(years,prediction2,color="green")
+ax.plot(dct2.keys(),dct2.values(),color="green")
 #ax.scatter(years_test,temps_test,label="Testing")
 #ax.plot(years_test,prediction,color='black',label="Predicted")
 ax.grid()
