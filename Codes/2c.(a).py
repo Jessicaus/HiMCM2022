@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[13]:
+# In[1]:
 
 
 #!/usr/bin/env python
@@ -31,7 +31,7 @@ from sklearn.svm import SVR
 from collections import OrderedDict
 
 
-# In[14]:
+# In[2]:
 
 
 csfont = {'fontname':'Times New Roman'}
@@ -43,7 +43,7 @@ filename2 = "temp.csv"
 
 # <h1 style="color:Green;">Getting Data</h1> 
 
-# In[15]:
+# In[3]:
 
 
 # initializing the titles and rows list
@@ -67,7 +67,7 @@ with open(filename, 'r') as csvfile:
     print(line_numbers)
 
 
-# In[34]:
+# In[4]:
 
 
 years=[]
@@ -81,7 +81,7 @@ co2conc=np.array(co2conc)
 print(len(years))
 
 
-# In[17]:
+# In[5]:
 
 
 # initializing the titles and rows list
@@ -105,7 +105,7 @@ with open(filename2, 'r') as csvfile:
     print(line_numbers)
 
 
-# In[18]:
+# In[6]:
 
 
 temps=[]
@@ -115,7 +115,7 @@ temps=temps[1:]
 temps=np.array(temps)
 
 
-# In[21]:
+# In[7]:
 
 
 #years_predict=[63,64,65,66,67] #start from 63
@@ -123,7 +123,7 @@ temps=np.array(temps)
 
 # <h1 style="color:Green;">1c Modeling!</h1> 
 
-# In[19]:
+# In[8]:
 
 
 def exp(x,a,b,c):
@@ -143,7 +143,7 @@ def predict1a(years_predict):
 
 # <h1 style="color:Green;">2a Modeling!</h1> 
 
-# In[20]:
+# In[9]:
 
 
 def residualtest(model,emp):
@@ -170,25 +170,25 @@ model = pm.auto_arima(resid,
                       stepwise=True, trace=True)
 
 
-# In[22]:
+# In[10]:
 
 
-def predict1b1(years_predict):
+def predict2a1(years_predict):
     linearmodel=linear_regression(years_predict)
     return linearmodel
-def predict1b2(years_predict):
+def predict2a2(years_predict):
     prediction=model.predict(len(years_predict))
     return prediction
-def predict1b(years_predict):
+def predict2a(years_predict):
     test=[]
-    lmodel=predict1b1(years_predict)
-    rmodel=predict1b2(years_predict)
+    lmodel=predict2a1(years_predict)
+    rmodel=predict2a2(years_predict)
     for i in range(len(lmodel)):
         test.append(lmodel[i]+rmodel[i])
     return test
 
 
-# In[31]:
+# In[11]:
 
 
 yearstest=list(years)
@@ -200,14 +200,14 @@ for i in range(len(yearstest),100+len(yearstest),5):
     years_predict=np.arange(i,i+5)
     co2conctest.extend(predict1a(years_predict))
     #print(co2conctest)
-    tempstest.extend(predict1b(years_predict))
+    tempstest.extend(predict2a(years_predict))
     #print(tempstest)
     corrcoef.append(np.corrcoef(np.array(co2conctest),np.array(tempstest))[0][1])
     #print(np.corrcoef(np.array(co2conctest),np.array(tempstest)))
 print(corrcoef)
 
 
-# In[33]:
+# In[12]:
 
 
 fig, ax = plt.subplots(figsize=(7, 5))
