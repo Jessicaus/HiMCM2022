@@ -188,15 +188,16 @@ def predict2a(years_predict):
     return test
 
 
-# In[11]:
+# In[22]:
 
 
-yearstest=list(years)
+yearstest=[0]
 co2conctest=list(co2conc)
 tempstest=list(temps)
 corrcoef=[0.96131825]
-for i in range(len(yearstest),100+len(yearstest),5):
+for i in range(len(years),100+len(years),5):
     #print(i)
+    yearstest.append(i-len(years)+5)
     years_predict=np.arange(i,i+5)
     co2conctest.extend(predict1a(years_predict))
     #print(co2conctest)
@@ -205,15 +206,17 @@ for i in range(len(yearstest),100+len(yearstest),5):
     corrcoef.append(np.corrcoef(np.array(co2conctest),np.array(tempstest))[0][1])
     #print(np.corrcoef(np.array(co2conctest),np.array(tempstest)))
 print(corrcoef)
+print(len(corrcoef))
+print(len(yearstest))
 
 
-# In[12]:
+# In[23]:
 
 
 fig, ax = plt.subplots(figsize=(7, 5))
 ax.grid()
-ax.scatter(yearstest[-len(corrcoef):],corrcoef)
-ax.plot(yearstest[-len(corrcoef):],corrcoef)
+ax.scatter(yearstest,corrcoef)
+ax.plot(yearstest,corrcoef)
 ax.set_xlabel("Years")
 ax.set_ylabel("Correlation")
 ax.title.set_text('Correlation v Years')

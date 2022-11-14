@@ -199,45 +199,46 @@ def predict2b(years,temps):
     return xmodel
 
 
-# In[ ]:
+# <h1 style="color:Green;">Finding Residuals / difference</h1> 
+
+# In[45]:
 
 
+yearstest=[]
+co2conc1atest=[] #real
+co2conc2btest=[] #function
+residual=[0]
+
+for i in range(len(yearstest),100+len(yearstest),5):
+    years_predict=np.arange(i,i+5)
+    yearstest.append(i)
+    co2conc1atest.extend(predict1a(years_predict))
+    co2conc2btest.extend(predict2b(years_predict,predict2a(years_predict)))
+    rsd,rs=residualtest(co2conc1atest,co2conc2btest)
+    residual.append(rs)
+    #print(tempstest)
+    #print(np.corrcoef(np.array(co2conctest),np.array(tempstest)))
+print(residual)
 
 
-
-# In[34]:
-
-
-years_predict=[63,64,65,66,67] #start from 63
-co2concpredict2b=predict2b(years_predict,predict2a(years_predict))
-print(predict2b(years_predict,predict2a(years_predict)))
+# In[46]:
 
 
-# In[35]:
+residual=np.diff(np.array(residual))
+print(residual)
+print(len(yearstest))
 
 
-co2conc1a=predict1a(years_predict)
-print(co2conc1a)
-
-
-# In[36]:
+# In[47]:
 
 
 fig, ax = plt.subplots(figsize=(7, 5))
 ax.grid()
-ax.scatter(years, co2conc, label='Training Data')
-ax.scatter(years_predict,co2conc1a,label='Testing Data')
-ax.plot(years_predict, co2concpredict2b,c='k')
-#ax.plot(testc_test, model_test,color='gray')
-#ax.scatter(testc_test, co2conc_test, c='r',label='Testing Data')
-ax.set_xlabel("Test Case")
-ax.set_ylabel("Predicted CO2 Concentration")
-#ax[x,y].title.set_text(""{list}"'Regression')
-ax.legend()
-#if ppp==0:
-#   fig.legend()
-ax.title.set_text('predict graph')
-#plt.savefig('{}.png'.format(names[x]), bbox_inches='tight',dpi=1200)
-#fig.savefig("11regression"+name+".png")
-plt.plot()
+ax.scatter(yearstest,residual)
+ax.plot(yearstest,residual)
+ax.set_xlabel("Years")
+ax.set_ylabel("Residual Change over 5 years")
+ax.title.set_text('Residual v Years')
+#ax.legend()
+plt.show()
 
