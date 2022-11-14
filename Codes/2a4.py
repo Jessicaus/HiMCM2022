@@ -244,7 +244,7 @@ print(model.fit().summary())
 
 def func(x):
     return p[1] * x + p[0]
-model=list(map(func,yearssc))
+model=list(map(func,years))
 model_train=model[:msk]
 model_test=model[msk:]
 
